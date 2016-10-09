@@ -1,17 +1,25 @@
 <html>
   <head>
-    <title>Pratt to CSV/.eaf</title>
+    <title>Praat to CSV/.eaf</title>
+    <link rel="stylesheet" type="text/css" href="./assets/style.css">
   </head>
   <body>
     <div>
-      <input id="importFile" type="file" multiple />
+      <input id="importFile" type="file" multiple onchange="onImportFileChange()" />
+      <div>
+        <span>Input files:</span>
+        <div id="importFiles"></div>
+      </div>
     </div>
     <div>
-      <input id="exportDir" placeholder="output file folder"></input>
-      <button onclick="getExportDir()">Export CSV</button>
+      <span>Export to: </span>
+      <input id="exportDir"></input>
+      <!--<button onclick="getExportDir()">Export CSV</button>-->
     </div>
-    <button onclick="generateCSV()">Generate CSV</button>
-    <!--<button onclick="generateEAF()">Generate .eaf</button>-->
+    <div>
+      <button onclick="generateCSV()">Generate CSV</button>
+      <!--<button onclick="generateEAF()">Generate .eaf</button>-->
+    </div>
   </body>
   <script src="./scripts/scripts.js"></script>
 </html>
