@@ -6,17 +6,27 @@
   <body>
 
     <div>
+      <span>Input files:</span>
       <button onclick="importFiles()">Select Input CSV Files</button>
-      <div>
-        <span>Input files:</span>
-        <div id="inputFiles"></div>
-      </div>
+      <div id="inputFiles"></div>
     </div>
 
     <div>
       <span>Output Folder: </span>
       <input id="exportDir"></input>
       <button onclick="selectExportDir()">Select</button>
+    </div>
+
+    <div>
+      <span>INTENSITY THRESHOLD: </span>
+      <input type="number" id="threshold" oninput="setThreshold(this.value)" />
+      <span>dB</span>
+    </div>
+
+    <div>
+      <span>SEGMENT BOUNDARY BUFFER : </span>
+      <input type="text" id="buffer" oninput="setBuffer(this.value)" />
+      <span>s</span>
     </div>
 
     <div>
