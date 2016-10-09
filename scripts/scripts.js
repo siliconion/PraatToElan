@@ -1,28 +1,45 @@
-// const fs = require('fs');
-// const {dialog} = require('electron').remote;
+const fs = require('fs');
+const {dialog} = require('electron').remote;
 let inputFiles;
 let outputFolder = '$HOME/Desktop/PrattToElan/';
-let inputFilesDiv = document.getElementById("importFile");
 
-function onImportFileChange() {
-  inputFiles = document.getElementById("importFile").files;
-  for(let i = 0; i< inputFiles.length; i++){
-    var n = document.createElement("DIV");        // Create a <button> element
-    var t = document.createTextNode(inputFiles[i].name);       // Create a text node
-    n.appendChild(t);
-    document.getElementById("importFiles").appendChild(n);
-  }
-  // document.getElementById("importFile").files.forEach((file) => {
-  //   document.getElementById("importFiles").appendChild(file.name);
-  // })
-  return false;
+function renderInputFiles(files) {
+  // innerHTML is slower, see http://stackoverflow.com/questions/3955229
+  document.getElementById('inputFiles').innerHTML = '';  
+  console.log("here")
+  files.forEach(file => {
+    var node = document.createElement("DIV");
+    var t = document.createTextNode(file); 
+    node.appendChild(t);
+    document.getElementById('inputFiles').appendChild(node);    
+  })
+  inputFiles = files;
 }
 
-function getExportDir() {
-  alert("get export")
+function importFiles() {
+  dialog.showOpenDialog({
+      filters:[{name: 'csv', extensions: ['csv']},],
+      properties: ['openFile','multiSelections']
+    }, 
+    renderInputFiles
+  );
+}
+
+function renderOutputDiv(path) {
+  console.log('renderOutputDiv', path);
+  outputFolder = path;
+  document.getElementById("exportDir").value=path;
+}
+
+function selectExportDir() {
+  console.log('select output folder')
+  dialog.showOpenDialog({
+      properties: ['openDirectory'],
+    },
+    renderOutputDiv
+  );
 }
 function processFile(file) {
-  console.log("xxxxxx", file.webkitRelativePath, file.name);
 }
 function processFiles() {
   // inputFiles.forEach(file => processFile(file));
