@@ -1,19 +1,23 @@
 const fs = require('fs');
 const readline = require('readline');
 
-let Data = {};
-let outputFolder = '$HOME/Desktop/PrattToElan/';
-let threshold = 58;
-let buffer = 0.35;
-let averageSize = 11;
-let averageSpan = 5;
+let File = {};
+let outputFolder;
+let threshold;
+let buffer;
+let averageSize;
+let averageSpan;
 
-Data.setOutputFolder = function(input){
-  outputFolder = input;
+File.getSettings = function(input){
+  outputFolder = input.outputFolder;
+  threshold = input.threshold;
+  buffer = input.buffer;
+  averageSize = input.averageSize;
+  averageSpan = (averageSize -1)/2;
 }
 
 
-Data.processFile = function processFile(file) {
+File.processFile = function processFile(file) {
   console.log('process one file', file);
   const lineReader = readline.createInterface({
     input: fs.createReadStream(file, {autoClose:true}),
@@ -29,15 +33,17 @@ Data.processFile = function processFile(file) {
   let lineVal = null;
   let speech = false;
   let outputFile = outputFolder + file.split("/").pop();
+  console.log("output File", outputFile);
   lineReader.on('line', line => {
-    // console.log(lineIndex, line);
     lineVal = line.split(",");
     if(lineIndex === 0){
       // generate output file with header
       fs.appendFileSync(file, "start, end\n")
     } else {
+
       timeCache.push(+lineVal[0]);
       valCache.push(+lineVal[1]);
+
       if(lineIndex <= averageSize) {
         average = +lineVal[1];
         valTotal += +lineVal[1];
@@ -69,7 +75,7 @@ Data.processFile = function processFile(file) {
           if(currentStart>prevEnd){
             // not overlap, write the privous end and this start to result
             console.log("no overlap, write to file!!!!", prevStart, prevEnd)
-            fs.appendFileSync(file, prevStart +","+ prevEnd +"\n");
+            fs.appendFileSync(outputFile, prevStart +","+ prevEnd +"\n");
             prevStart = currentStart;
           }
         }
@@ -86,9 +92,8 @@ Data.processFile = function processFile(file) {
   })
   lineReader.on('close', data => {
     console.log("closing!", prevStart, prevEnd);
+    fs.appendFileSync(outputFile, prevStart +","+ prevEnd +"\n");
   });
-  // console.log("Last write", prevStart, prevEnd)
-  // fs.appendFileSync(file, prevStart +","+ prevEnd +"\n");
 }
 
-module.exports = Data;
+module.exports = File;
