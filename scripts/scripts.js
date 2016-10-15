@@ -33,6 +33,9 @@ function importFiles() {
 
 function renderOutputDiv(path) {
   outputFolder = path;
+  if (outputFolder[outputFolder.length-1] !== '/') {
+    outputFolder += '/';
+  }
   document.getElementById("exportDir").value = outputFolder;
 }
 

@@ -1,0 +1,196 @@
+I figured out a simple way to automate segmentation of speech for import into ELAN for transcription. As of right now, I can do it running a Praat script to export values from the audio, which I then cut and paste into Excel to do some calculations, and then output a .csv file which I can import into ELAN as a segmented tier. If possible, I would like to automate the entire process.
+
+Minimally, I would need it to: 
+
+1) take an output text file from Praat (which is a table of values)
+2) do a few calculations that can be done easily in Excel
+3) order and export final values to a .csv file that can be imported into ELAN
+
+Ideally, it would also run the Praat script and feed it into the calculation process. Even better would be if the output could be used to automatically build an .eaf file for ELAN.
+
+
+Basically, the way it works is that the Praat script scans and outputs all intensity data to a text file. I then convert that to a csv to cut and paste into Excel.
+
+	You can convert the .txt file to .csv by running the following command the command line:
+
+	sed -E 's/   /,/g' “FILENAME”.txt > “FILENAME”.csv
+
+My formulas in Excel look at small ranges of input data one at a time, moving through each line, to see if the average intensity meets a threshold (e.g. the average of 10 data points is above 58 dB). This is essentially finding intensity peaks in the data.
+
+The intensity peaks are assumed to be speech. Every consecutive data point for which the threshold is met is assumed to be a speech segment.
+
+A(n adjustable) buffer is added to the beginning and end points of each segment.
+
+If the adjusted segments overlap, they are assumed to be part of a larger continuous segment.
+
+The beginning and endpoints of the larger segments are then collected and outputted to be imported into ELAN.
+
+
+Here's an algorithm I was thinking of that would be able to do it, I just don't know how to implement it. Where applicable, I have included the formulae that I’ve been using in Excel to make it work. Alternatively, you could just look at the Excel files to get an idea of what it does.
+
+
+1) SET INTENSITY THRESHOLD (value in dB), store as a variable ($threshold) e.g. 58
+2) SET SEGMENT BOUNDARY BUFFER (value in s.), store as a variable ($buffer) e.g. 0.35
+
+For the variable assignments (intensity threshold and boundary buffer, it would be nice to be able to input them into a form at the beginning of the process, something like:
+
+print('Enter an intensity threshold value (dB), or type ' + '"default"')
+thresh_input = input()
+if thresh_input == 'default':
+    threshold = 58
+else:
+    threshold = float(thresh_input)
+
+print('What time buffer do you want for segment edges?')
+buffer = float(input())
+
+3) Input data
+4) GET NUMBER OF ROWS, store as a variable (e.g. $rownum)
+5) CREATE ADDITIONAL COLUMNS
+
+Create columns “average_dB”, “above_threshold”, “start_1”, “end_1”, “start_2”, “end_2”
+In 2nd file (“start_3”, “end_3”, “start_4”, “end_4”, “check_overlap”, “start_5”, “end_5”).
+In 3rd file (“start_final”, “end_final”)
+
+6) COPY VALUES FROM FIRST 5 ROWS
+
+	FOR rows 1-5 of “Intensity_dB” 
+		Copy “Intensity_dB” value to “average_dB”
+
+7) CALCULATE AVERAGES OF RANGE OF SURROUNDING INTENSITY VALUES
+	Excel: =AVERAGE(C2:C12)
+
+	FOR row 6 to $rownum
+
+		a. SUM range of 5 preceding and 5 following “Intensity_dB” values, 				DIVIDE by 11 		
+		b. Copy result to “average_dB” in same row
+
+8) CHECK AVERAGES AGAINST THRESHOLD
+	Excel: =IF(D2>57,1,0)
+
+	FOR all rows (1 to $rownum)
+	
+		IF value in “average_dB” is >= $threshold, print 1 in same row, 				“above_threshold”
+		ELSE print 0 in same row, “above_threshold”
+
+9) CHECK THRESHOLD VALUE FOR FIRST ROW
+	Excel: =IF(E2=1,1,0)
+
+	IF “above_threshold” of row1 = 1,
+	THEN “start_1” of row1 = 1 AND “end_1” of row1 = 0
+	ELSE “above_threshold” of row1 = 0 AND “end_1” of row1 = 0
+
+10) CHECK REMAINING THRESHOLD VALUES IN PAIRS OF ROWS
+	Excel: =IF(AND(E3=1,E2=0),1,0) #for start
+		=IF(AND(E2=1,E3=0),1,0) #for end
+
+	FOR row2 to $rownum 
+		IF “above_threshold” of row(X) - “above_threshold” of row(X-1) = 1
+			THEN (“start_1” of row(X) = 1) AND (“end_1” of row(X) = 0)
+		ELIF
+			IF (“above_threshold” of row(X) - “above_threshold” of 					row(X-1) = -1)
+			THEN (“start_1” of row(X) = 1) AND (“end_1” of row(X) = 0)
+		ELSE
+			IF (“above_threshold” of row(X) - “above_threshold” of 					row(X-1) = 0)
+			THEN (“start_1” of row(X) = 0) AND (“end_1” of row(X) = 0)
+
+11) IDENTIFY INITIAL SEGMENT BOUNDARIES
+	Excel: =IF(F2=1,B2,"")
+
+	FOR row(1) to row($rownum)
+
+		IF “start_1” = 1
+		THEN “start_2” = “Time_s”
+		ELSE do nothing
+
+12) IDENTIFY FINAL SEGMENT BOUNDARIES 
+	Excel: =IF(G2=1,B2,"") #for end
+
+	FOR row(1) to row($rownum)
+		IF “end_1” = 1
+		THEN “end_2” = “Time_s”
+		ELSE do nothing
+
+13) SORT AND OUTPUT START-END TIMES TO NEW .csv
+	(in Excel, copied and sorted in new tab “PASTED-SORTED START2-END2 VALUES”)
+
+Copy non-blank values from “start_2” to “start_3” in new file, order without spaces 
+Copy non-blank values from “end_2” to “end_3” in new file, order without spaces
+
+
+14) GET NUMBER OF ROWS IN NEW FILE CONTAINING NUMERALS, store as a variable $rownew
+
+15) ADD BUFFER TO START-END TIMES
+	Excel: =A2-0.35 (the value subtracted will differ depending on input for buffer variable)
+		=B2+0.35
+
+	FOR row1 to $rownew
+		“start_4” = (“start_3” - $buffer)
+		“end_4” = (“end_3” + $buffer)
+
+16) CHECK FOR OVERLAPPING START-END TIMES
+	Excel: =IF(D2>C3,1,0)
+
+	FOR row1 to $rownew
+		IF row(X), “end_4” > row(X+1), “start_4”
+		THEN row(X), “check_overlap” = 1
+		ELSE row(X), “check_overlap” = 0
+
+
+17) CHECK FOR FINAL START TIME FOR FIRST ROW
+	Excel: =IF(E2=1,C2,"")
+
+	FOR row1
+		IF row1,“check_overlap” = 1
+		THEN row1, “start_5” = “start_4”
+		ELSE do nothing
+
+18) CHECK FOR FINAL END TIME FOR FIRST ROW
+	Excel: =IF((AND(F2=C2,E2=0)),D2,"")
+
+	FOR row1
+		IF (row1,“check_overlap” = 1) AND (row1,“start_5” = “start_4”)
+		THEN row1, “end_5” = “end_4”
+		ELSE do nothing
+
+
+19) CHECK FOR FINAL END TIME FOR LAST ROW
+	Excel: =IF(E267=1,D267,"") 
+
+	FOR $rownew 
+		IF $rownew,“check_overlap” = 1
+		THEN $rownew, “end_5” = “end_4”
+		ELSE do nothing
+
+
+20) IDENTIFY AND COPY REMAINING FINAL START TIMES
+	Excel: =IF(AND(E2=1,E3=0),D3,IF(AND(E2=0,E3=0),D3,"")) (for rows 2-last row)
+
+	FOR row2 to $rownew
+		IF (row(X), “check_overlap” = 0) AND (row(X+1), “check_overlap” =1)
+		THEN row(X), “start_5” = “start_4”
+		
+		ELIF (row(X), “check_overlap” = 0) AND (row(X+1), “check_overlap” =0)
+		THEN row(X), “start_5” = “start_4”
+
+		ELSE do nothing
+		
+
+21) IDENTIFY AND COPY REMAINING FINAL END TIMES
+	Excel: =IF(AND(E2=1,E3=0),D3,IF(AND(E2=0,E3=0),D3,""))
+	
+	FOR row2 to ($rownew-1)
+		IF (row(X), “check_overlap” = 1) AND (row(X+1), “check_overlap” = 0)
+		THEN row(X), “end_5” = “end_4”
+		
+		ELIF (row(X), “check_overlap” = 0) AND (row(X+1), “check_overlap” =0)
+		THEN row(X), “end_5” = “end_4”
+
+		ELSE do nothing
+		
+
+22) ORDER AND OUTPUT FINAL START-END TIMES TO NEW .csv
+	(in Excel, copied and sorted in new tab “PASTE-SORT FINAL VALUES”)
+
+Copy non-blank values from “start_5” to “start_final” in new file, without spaces
+Copy non-blank values from “end_5” to “end_final” in new file, without spaces
