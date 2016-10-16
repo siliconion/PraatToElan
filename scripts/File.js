@@ -13,7 +13,10 @@ File.getSettings = function(input){
   threshold = input.threshold;
   buffer = input.buffer;
   averageSize = input.averageSize;
-  averageSpan = (averageSize -1)/2;
+  averageSpan = (averageSize - 1) / 2;
+  if (!fs.existsSync(outputFolder)) {
+      fs.mkdirSync(outputFolder);
+  }
 }
 
 
@@ -32,7 +35,8 @@ File.processFile = function processFile(file) {
   let average = 0;
   let lineVal = null;
   let speech = false;
-  let outputFile = outputFolder + file.split("/").pop().split(".").shift() + "_output.csv";
+  let regex = new RegExp(/\\|\//);
+  let outputFile = outputFolder + file.split(regex).pop().split(".").shift() + "_output.csv";
   lineReader.on('line', line => {
     lineVal = line.split(",");
     if(lineIndex === 0){

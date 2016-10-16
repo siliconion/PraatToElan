@@ -1,10 +1,9 @@
-const fs = require('fs');
 const readline = require('readline');
 const {dialog} = require('electron').remote;
 const File = require(__dirname+'/scripts/File');
 
 let inputFiles;
-let outputFolder = __dirname+'/tmp/output';
+let outputFolder = __dirname+'/output';
 let threshold = 58;
 let buffer = 0.35;
 let averageSize = 11;
