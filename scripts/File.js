@@ -96,7 +96,8 @@ File.processFile = function processFile(file) {
       prevEnd = endTime;
     }
     // console.log("closing!", prevStart, prevEnd);
-    fs.appendFileSync(outputFile, prevStart +","+ prevEnd +"\n");
+    fs.appendFileSync(outputFile, prevStart + "," + prevEnd + "\n");
+    return true;
   });
 }
 

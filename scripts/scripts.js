@@ -3,7 +3,7 @@ const {dialog} = require('electron').remote;
 const File = require(__dirname+'/scripts/File');
 
 let inputFiles;
-let outputFolder = __dirname+'/output';
+let outputFolder = __dirname;
 let threshold = 58;
 let buffer = 0.35;
 let averageSize = 11;
@@ -52,6 +52,8 @@ function processFile(file) {
 function processFiles() {
   console.log('process files', inputFiles)
   inputFiles.forEach(processFile);
+  files = [];
+  renderInputFiles();
 }
 function generateCSV() {
   File.getSettings({
@@ -60,7 +62,7 @@ function generateCSV() {
     buffer : buffer,
     averageSize : averageSize,
   })
-  processFiles();
+  return processFiles();
 }
 
 function setThreshold(input) {
