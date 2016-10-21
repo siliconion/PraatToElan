@@ -6,12 +6,12 @@
   <body>
 
     <div id="lang">
-      <span><input type="radio" name="language" onchange="setLang()" checked> Espanol </span>
-      <span><input type="radio" name="language" onchange="setLang()"> English </span>
+      <span><input type="radio" name="language" onchange="setLang()" value="spa" checked> Espanol </span>
+      <span><input type="radio" name="language" onchange="setLang()" value="eng"> English </span>
     </div>
     <div>
       <span class="lan-inputFiles">Input files:</span>
-      <button onclick="importFiles()" class="selectInput">Select Input CSV Files</button>
+      <button onclick="importFiles()" class="lan-selectInput">Select Input CSV Files</button>
       <div id="inputFiles"></div>
     </div>
 
@@ -22,7 +22,7 @@
     </div>
 
     <div>
-      <span class="lan-intensityThresould">INTENSITY THRESHOLD:</span>
+      <span class="lan-intensityThresold">INTENSITY THRESHOLD:</span>
       <input type="number" id="threshold" oninput="setThreshold(this.value)" />
       <span>dB</span>
     </div>

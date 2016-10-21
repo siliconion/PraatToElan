@@ -21,6 +21,17 @@ function renderInputFiles(files) {
   })
   
 }
+function setLang() {
+  let lan = document.querySelector('input[name="language"]:checked').value;
+  var resources = Lang[lan];
+  document.getElementsByClassName('lan-inputFiles')[0].innerHTML = resources.inputFiles;
+  document.getElementsByClassName('lan-selectInput')[0].innerHTML = resources.selectInput;
+  document.getElementsByClassName('lan-outputFolder')[0].innerHTML = resources.outputFolder;
+  document.getElementsByClassName('lan-select')[0].innerHTML = resources.select;
+  document.getElementsByClassName('lan-intensityThresold')[0].innerHTML = resources.intensityThreshold;
+  document.getElementsByClassName('lan-boundryBuffer')[0].innerHTML = resources.boundryBuffer;
+  document.getElementsByClassName('lan-generateCsv')[0].innerHTML = resources.generateCsv;
+}
 
 function importFiles() {
   dialog.showOpenDialog({
@@ -81,6 +92,7 @@ function setBuffer(input) {
 
 window.onload = () => {
   renderOutputDiv(outputFolder);
+  setLang();
   document.getElementById("threshold").value = threshold;
   document.getElementById("buffer").value = buffer;
 }
