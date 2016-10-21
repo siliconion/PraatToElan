@@ -5,32 +5,36 @@
   </head>
   <body>
 
+    <div id="lang">
+      <span><input type="radio" name="language" onchange="setLang()" checked> Espanol </span>
+      <span><input type="radio" name="language" onchange="setLang()"> English </span>
+    </div>
     <div>
-      <span>Input files:</span>
-      <button onclick="importFiles()">Select Input CSV Files</button>
+      <span class="lan-inputFiles">Input files:</span>
+      <button onclick="importFiles()" class="selectInput">Select Input CSV Files</button>
       <div id="inputFiles"></div>
     </div>
 
     <div>
-      <span>Output Folder: </span>
+      <span class="lan-outputFolder">Output Folder:</span>
       <input id="exportDir"></input>
-      <button onclick="selectExportDir()">Select</button>
+      <button onclick="selectExportDir()" class="lan-select">Select</button>
     </div>
 
     <div>
-      <span>INTENSITY THRESHOLD: </span>
+      <span class="lan-intensityThresould">INTENSITY THRESHOLD:</span>
       <input type="number" id="threshold" oninput="setThreshold(this.value)" />
       <span>dB</span>
     </div>
 
     <div>
-      <span>SEGMENT BOUNDARY BUFFER : </span>
+      <span class="lan-boundryBuffer">SEGMENT BOUNDARY BUFFER :</span>
       <input type="text" id="buffer" oninput="setBuffer(this.value)" />
       <span>s</span>
     </div>
 
     <div>
-      <button onclick="generateCSV()">Generate CSV</button>
+      <button onclick="generateCSV()" class="lan-generateCsv">Generate CSV</button>
       <!--<button onclick="generateEAF()">Generate .eaf</button>-->
     </div>
   </body>

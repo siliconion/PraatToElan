@@ -1,6 +1,7 @@
 const readline = require('readline');
 const {dialog} = require('electron').remote;
 const File = require(__dirname+'/scripts/File');
+const Lang = require(__dirname+'/scripts/Language');
 
 let inputFiles;
 let outputFolder = __dirname;
