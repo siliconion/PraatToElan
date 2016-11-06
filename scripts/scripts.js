@@ -8,7 +8,18 @@ let outputFolder = __dirname;
 let threshold = 58;
 let buffer = 0.35;
 let averageSize = 11;
-
+let fileInfo = "";  //B_Transcripción-txt-ixi
+let participants = [
+  {name: 1, code: "A"},
+  {name: 2, code: "B"},
+  {name: 3, code: "C"},
+  {name: 4, code: "D"}
+];
+let variants = [
+  {name: "Chajul", code: "ixj"}, 
+  {name: "Nebaj", code: "ixi"},
+  {name: "Cotzal", code: "ixl"}
+];
 function renderInputFiles(files) {
   // innerHTML is slower, see http://stackoverflow.com/questions/3955229
   document.getElementById('inputFiles').innerHTML = '';
@@ -19,15 +30,18 @@ function renderInputFiles(files) {
     node.appendChild(t);
     document.getElementById('inputFiles').appendChild(node);
   })
-  
 }
+
 function setLang() {
   let lan = document.querySelector('input[name="language"]:checked').value;
   var resources = Lang[lan];
   document.getElementsByClassName('lan-inputFiles')[0].innerHTML = resources.inputFiles;
   document.getElementsByClassName('lan-selectInput')[0].innerHTML = resources.selectInput;
   document.getElementsByClassName('lan-outputFolder')[0].innerHTML = resources.outputFolder;
-  document.getElementsByClassName('lan-select')[0].innerHTML = resources.select;
+  let select = document.getElementsByClassName('lan-select');
+  for(key in select){
+    select[key].innerHTML = resources.select;
+  }
   document.getElementsByClassName('lan-intensityThresold')[0].innerHTML = resources.intensityThreshold;
   document.getElementsByClassName('lan-boundryBuffer')[0].innerHTML = resources.boundryBuffer;
   document.getElementsByClassName('lan-generateCsv')[0].innerHTML = resources.generateCsv;
@@ -73,6 +87,8 @@ function generateCSV() {
     threshold : threshold,
     buffer : buffer,
     averageSize : averageSize,
+    participant: participant,
+    variant: variant,
   })
   return processFiles();
 }
@@ -90,9 +106,49 @@ function setBuffer(input) {
   }
 }
 
+/* When the user clicks on the button, 
+toggle between hiding and showing the dropdown content */
+function dropDownParticipant() {
+    document.getElementById("participantDropdown").classList.toggle("show");
+}
+function dropDownVariant() {
+    document.getElementById("variantDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+
 window.onload = () => {
   renderOutputDiv(outputFolder);
   setLang();
   document.getElementById("threshold").value = threshold;
   document.getElementById("buffer").value = buffer;
+  participants.forEach(obj => {
+    let node = document.createElement("div"); 
+    let newContent = document.createTextNode(obj.name); 
+    node.appendChild(newContent);
+    // node.className = "";
+    console.log("par", obj.name);
+    document.getElementById("participantDropdown").appendChild(node);
+  })
+  variants.forEach(obj => {
+    let node = document.createElement("div"); 
+    let newContent = document.createTextNode(obj.name); 
+    node.appendChild(newContent);
+    // node.className = "";
+    console.log("var", obj.name);
+    document.getElementById("variantDropdown").appendChild(node);
+  })
 }

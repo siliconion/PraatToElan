@@ -17,6 +17,7 @@ File.getSettings = function(input){
   if (!fs.existsSync(outputFolder)) {
       fs.mkdirSync(outputFolder);
   }
+  fileInfo = input.fileInfo;
 }
 
 
@@ -41,7 +42,7 @@ File.processFile = function processFile(file) {
     lineVal = line.split(",");
     if(lineIndex === 0){
       // generate output file with header
-      fs.appendFileSync(outputFile, "start, end\n")
+      fs.appendFileSync(outputFile, "Tier, Annotation, Begin_Time, End_Time\n")
     } else {
 
       timeCache.push(+lineVal[0]);
@@ -74,6 +75,8 @@ File.processFile = function processFile(file) {
             // not overlap, write the privous end and this start to result
             // console.log("XXXXXXXXXXXXXXXXX no overlap, write to file!!!!", prevStart, prevEnd)
             if(prevStart !== 0 && prevEnd !== 0){
+              // fs.appendFileSync(outputFile, prevStart +","+ prevEnd +"\n");
+              let writeString = `,,{$prevStart}, {$preEnd}`;
               fs.appendFileSync(outputFile, prevStart +","+ prevEnd +"\n");
             }
             prevStart = currentStart;

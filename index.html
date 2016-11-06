@@ -5,38 +5,62 @@
   </head>
   <body>
 
-    <div id="lang">
+    <div id="lang" class="div">
       <span><input type="radio" name="language" onchange="setLang()" value="spa" checked> Espanol </span>
       <span><input type="radio" name="language" onchange="setLang()" value="eng"> English </span>
     </div>
-    <div>
+
+    <div class="div">
       <span class="lan-inputFiles">Input files:</span>
       <button onclick="importFiles()" class="lan-selectInput">Select Input CSV Files</button>
       <div id="inputFiles"></div>
     </div>
 
-    <div>
+    <div class="div">
       <span class="lan-outputFolder">Output Folder:</span>
       <input id="exportDir"></input>
       <button onclick="selectExportDir()" class="lan-select">Select</button>
     </div>
 
-    <div>
+    <div class="div">
       <span class="lan-intensityThresold">INTENSITY THRESHOLD:</span>
       <input type="number" id="threshold" oninput="setThreshold(this.value)" />
       <span>dB</span>
     </div>
 
-    <div>
+    <div class="div">
       <span class="lan-boundryBuffer">SEGMENT BOUNDARY BUFFER :</span>
       <input type="text" id="buffer" oninput="setBuffer(this.value)" />
       <span>s</span>
     </div>
 
-    <div>
+    <div class="div">
+      <span class="lan-participant">Participante :</span>
+      <div class="dropdown participant">
+        <button onclick="dropDownParticipant()" class="dropbtn lan-select">Select</button>
+        <!--<button class="dropbtn lan-select">Select</button>-->
+        <div id="participantDropdown" class="dropdown-content">
+          
+        </div>
+      </div>
+    </div>
+
+    <div class="div">
+      <span class="lan-variant">Variant :</span>
+      <div class="dropdown variant">
+        <button onclick="dropDownVariant()" class="dropbtn lan-select">Select</button>
+        <!--<button class="dropbtn lan-select">Select</button>-->
+        <div id="variantDropdown" class="dropdown-content">
+          
+        </div>
+      </div>
+    </div>
+      
+    <div class="div">
       <button onclick="generateCSV()" class="lan-generateCsv">Generate CSV</button>
       <!--<button onclick="generateEAF()">Generate .eaf</button>-->
     </div>
+
   </body>
   <script src="./scripts/scripts.js"></script>
 </html>
