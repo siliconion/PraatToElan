@@ -7,6 +7,8 @@ let threshold;
 let buffer;
 let averageSize;
 let averageSpan;
+let variant;
+let participant;
 
 File.getSettings = function(input){
   outputFolder = input.outputFolder;
@@ -17,7 +19,8 @@ File.getSettings = function(input){
   if (!fs.existsSync(outputFolder)) {
       fs.mkdirSync(outputFolder);
   }
-  fileInfo = input.fileInfo;
+  variant = input.variant;
+  participant = input.participant;
 }
 
 
@@ -76,8 +79,9 @@ File.processFile = function processFile(file) {
             // console.log("XXXXXXXXXXXXXXXXX no overlap, write to file!!!!", prevStart, prevEnd)
             if(prevStart !== 0 && prevEnd !== 0){
               // fs.appendFileSync(outputFile, prevStart +","+ prevEnd +"\n");
-              let writeString = `,,{$prevStart}, {$preEnd}`;
-              fs.appendFileSync(outputFile, prevStart +","+ prevEnd +"\n");
+              // let writeString = `{$participant}_Transcripción-txt-{$variant},,{$prevStart}, {$preEnd}\n`;
+              let writeString = participant + "_Transcripción-txt-" + variant +",," + prevStart +","+ prevEnd +"\n";
+              fs.appendFileSync(outputFile, writeString);
             }
             prevStart = currentStart;
           }
@@ -98,8 +102,8 @@ File.processFile = function processFile(file) {
     if(prevEnd < endTime && speech === true){
       prevEnd = endTime;
     }
-    // console.log("closing!", prevStart, prevEnd);
-    fs.appendFileSync(outputFile, prevStart + "," + prevEnd + "\n");
+    let writeString = participant + "_Transcripción-txt-" + variant +",," + prevStart +","+ prevEnd +"\n";
+    fs.appendFileSync(outputFile, writeString);
     return true;
   });
 }

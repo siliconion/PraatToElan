@@ -26,6 +26,7 @@ function renderInputFiles(files) {
   // innerHTML is slower, see http://stackoverflow.com/questions/3955229
   document.getElementById('inputFiles').innerHTML = '';
   inputFiles = files;
+  console.log('input files', files, inputFiles)
   inputFiles.forEach(file => {
     var node = document.createElement("DIV");
     var t = document.createTextNode(file); 
@@ -82,8 +83,7 @@ function processFile(file) {
 function processFiles() {
   console.log('process files', inputFiles)
   inputFiles.forEach(processFile);
-  files = [];
-  renderInputFiles();
+  renderInputFiles([]);
 }
 function generateCSV() {
   File.getSettings({
@@ -122,7 +122,6 @@ function dropDownVariant() {
 // Close the dropdown menu if the user clicks outside of it
 window.onclick = function(event) {
   if (!event.target.matches('.dropbtn')) {
-
     var dropdowns = document.getElementsByClassName("dropdown-content");
     var i;
     for (i = 0; i < dropdowns.length; i++) {
