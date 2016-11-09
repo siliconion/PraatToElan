@@ -9,12 +9,14 @@ let threshold = 58;
 let buffer = 0.35;
 let averageSize = 11;
 let fileInfo = "";  //B_Transcripción-txt-ixi
+let participant = null;
 let participants = [
   {name: 1, code: "A"},
   {name: 2, code: "B"},
   {name: 3, code: "C"},
   {name: 4, code: "D"}
 ];
+let variant = null;
 let variants = [
   {name: "Chajul", code: "ixj"}, 
   {name: "Nebaj", code: "ixi"},
@@ -45,6 +47,8 @@ function setLang() {
   document.getElementsByClassName('lan-intensityThresold')[0].innerHTML = resources.intensityThreshold;
   document.getElementsByClassName('lan-boundryBuffer')[0].innerHTML = resources.boundryBuffer;
   document.getElementsByClassName('lan-generateCsv')[0].innerHTML = resources.generateCsv;
+  document.getElementsByClassName('lan-participant')[0].innerHTML = resources.participant;
+  document.getElementsByClassName('lan-variant')[0].innerHTML = resources.variant;
 }
 
 function importFiles() {
@@ -139,16 +143,28 @@ window.onload = () => {
     let node = document.createElement("div"); 
     let newContent = document.createTextNode(obj.name); 
     node.appendChild(newContent);
-    // node.className = "";
-    console.log("par", obj.name);
+    node.addEventListener("click", ()=>{
+      console.log("onclick", obj.name);
+      document.getElementById("participantDropdownText").textContent = obj.name;
+      document.getElementById("participantDropdownText").classList.remove("lan-select");
+      participant = obj.code;
+    })
+    console.log("par", obj.name, obj.code);
     document.getElementById("participantDropdown").appendChild(node);
   })
   variants.forEach(obj => {
-    let node = document.createElement("div"); 
+    let node = document.createElement("div");
     let newContent = document.createTextNode(obj.name); 
     node.appendChild(newContent);
+    node.addEventListener("click", ()=>{
+      console.log("onclick", obj.name);
+      document.getElementById("variantDropdownText").textContent = obj.name;
+      document.getElementById("variantDropdownText").classList.remove("lan-select");
+      variant = obj.code;
+    })
+    
     // node.className = "";
-    console.log("var", obj.name);
+    console.log("var", obj.name, obj.code);
     document.getElementById("variantDropdown").appendChild(node);
   })
 }
