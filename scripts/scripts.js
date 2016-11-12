@@ -8,7 +8,6 @@ let outputFolder = __dirname;
 let threshold = 58;
 let buffer = 0.35;
 let averageSize = 11;
-let fileInfo = "";  //B_Transcripción-txt-ixi
 let participant = null;
 let participants = [
   {name: 1, code: "A"},
@@ -22,18 +21,6 @@ let variants = [
   {name: "Nebaj", code: "ixi"},
   {name: "Cotzal", code: "ixl"}
 ];
-function renderInputFiles(files) {
-  // innerHTML is slower, see http://stackoverflow.com/questions/3955229
-  document.getElementById('inputFiles').innerHTML = '';
-  inputFiles = files;
-  console.log('input files', files, inputFiles)
-  inputFiles.forEach(file => {
-    var node = document.createElement("DIV");
-    var t = document.createTextNode(file); 
-    node.appendChild(t);
-    document.getElementById('inputFiles').appendChild(node);
-  })
-}
 
 function setLang() {
   let lan = document.querySelector('input[name="language"]:checked').value;
@@ -50,6 +37,18 @@ function setLang() {
   document.getElementsByClassName('lan-generateCsv')[0].innerHTML = resources.generateCsv;
   document.getElementsByClassName('lan-participant')[0].innerHTML = resources.participant;
   document.getElementsByClassName('lan-variant')[0].innerHTML = resources.variant;
+}
+
+function renderInputFiles(files) {
+  // innerHTML is slower, see http://stackoverflow.com/questions/3955229
+  document.getElementById('inputFiles').innerHTML = '';
+  inputFiles = files;
+  inputFiles.forEach(file => {
+    var node = document.createElement("DIV");
+    var t = document.createTextNode(file); 
+    node.appendChild(t);
+    document.getElementById('inputFiles').appendChild(node);
+  })
 }
 
 function importFiles() {
@@ -76,15 +75,16 @@ function selectExportDir() {
     renderOutputDiv
   );
 }
+
 function processFile(file) {
-  console.log('process one file', file);
   File.processFile(file);
 }
+
 function processFiles() {
-  console.log('process files', inputFiles)
   inputFiles.forEach(processFile);
   renderInputFiles([]);
 }
+
 function generateCSV() {
   File.getSettings({
     outputFolder : outputFolder,
@@ -99,14 +99,12 @@ function generateCSV() {
 
 function setThreshold(input) {
   threshold = input;
-  console.log("threshold", threshold);
 }
 
 function setBuffer(input) {
   let inputN = +input;
   if(typeof(buffer)==='number' && inputN > 0) {
     buffer = +input;
-    console.log("buffer", buffer);
   }
 }
 
@@ -133,37 +131,37 @@ window.onclick = function(event) {
   }
 }
 
+function setVariant(val) {
+  variant = val;
+}
+
+function setParticipant(val) {
+  participant = val;
+}
+
+renderDropDown = (inputArray, dropDownElementId, dropDownTextElementId, setVarFunc) => {
+  return () => { 
+    inputArray.forEach(obj => {
+      let node = document.createElement("div"); 
+      let newContent = document.createTextNode(obj.name); 
+      node.appendChild(newContent);
+      node.addEventListener("click", ()=>{
+        document.getElementById(dropDownTextElementId).textContent = obj.name;
+        document.getElementById(dropDownTextElementId).classList.remove("lan-select");
+        setVarFunc(obj.code);
+      })
+      document.getElementById(dropDownElementId).appendChild(node);
+    })
+  }
+}
+renderDropDownParicipant = renderDropDown(participants, "participantDropdown", "participantDropdownText", setParticipant);
+renderDropDownVairant = renderDropDown(variants, "variantDropdown", "variantDropdownText", setVariant);
+
 window.onload = () => {
   renderOutputDiv(outputFolder);
   setLang();
   document.getElementById("threshold").value = threshold;
   document.getElementById("buffer").value = buffer;
-  participants.forEach(obj => {
-    let node = document.createElement("div"); 
-    let newContent = document.createTextNode(obj.name); 
-    node.appendChild(newContent);
-    node.addEventListener("click", ()=>{
-      console.log("onclick", obj.name);
-      document.getElementById("participantDropdownText").textContent = obj.name;
-      document.getElementById("participantDropdownText").classList.remove("lan-select");
-      participant = obj.code;
-    })
-    console.log("par", obj.name, obj.code);
-    document.getElementById("participantDropdown").appendChild(node);
-  })
-  variants.forEach(obj => {
-    let node = document.createElement("div");
-    let newContent = document.createTextNode(obj.name); 
-    node.appendChild(newContent);
-    node.addEventListener("click", ()=>{
-      console.log("onclick", obj.name);
-      document.getElementById("variantDropdownText").textContent = obj.name;
-      document.getElementById("variantDropdownText").classList.remove("lan-select");
-      variant = obj.code;
-    })
-    
-    // node.className = "";
-    console.log("var", obj.name, obj.code);
-    document.getElementById("variantDropdown").appendChild(node);
-  })
+  renderDropDownParicipant();
+  renderDropDownVairant();
 }

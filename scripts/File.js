@@ -23,7 +23,6 @@ File.getSettings = function(input){
   participant = input.participant;
 }
 
-
 File.processFile = function processFile(file) {
   console.log('process one file', file);
   const lineReader = readline.createInterface({
@@ -73,13 +72,9 @@ File.processFile = function processFile(file) {
           speech = true;
           // check previous end
           currentStart = Math.max(0,timeCache[(averageSize-1)/2]-buffer);
-          // console.log("start of speech, time:", timeCache[(averageSize-1)/2], "+buffer:", currentStart, "prev start", prevStart, "prev end:", prevEnd)
           if(currentStart>prevEnd){
             // not overlap, write the privous end and this start to result
-            // console.log("XXXXXXXXXXXXXXXXX no overlap, write to file!!!!", prevStart, prevEnd)
             if(prevStart !== 0 && prevEnd !== 0){
-              // fs.appendFileSync(outputFile, prevStart +","+ prevEnd +"\n");
-              // let writeString = `{$participant}_Transcripción-txt-{$variant},,{$prevStart}, {$preEnd}\n`;
               let writeString = participant + "_Transcripción-txt-" + variant +",," + prevStart +","+ prevEnd +"\n";
               fs.appendFileSync(outputFile, writeString);
             }
@@ -90,7 +85,6 @@ File.processFile = function processFile(file) {
           // end of a speech
           prevEnd = timeCache[(averageSize-1)/2] + buffer;
           speech = false;
-          // console.log("end of speech, time:", timeCache[(averageSize-1)/2], "+buffer:", prevEnd);
         }
         timeCache.shift();
       }
